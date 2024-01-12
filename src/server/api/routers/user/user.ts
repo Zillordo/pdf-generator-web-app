@@ -1,27 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { UserRole } from "~/lib/constants";
-import * as z from "zod";
-
-export const createUserSchema = z
-  .object({
-    name: z.string().min(0).max(50),
-    surname: z.string().min(2).max(50),
-    email: z.string().email(),
-    password: z.string().min(8).max(50),
-    confirmPassword: z.string().min(8).max(50),
-    role: z.nativeEnum(UserRole),
-  })
-  .refine(
-    (values) => {
-      return values.password === values.confirmPassword;
-    },
-    {
-      message: "Passwords must match!",
-      path: ["confirmPassword"],
-    },
-  );
+import { createUserSchema, authorizeSchema } from "./user.schema";
 
 export const userRouter = createTRPCRouter({
   list: publicProcedure.query(() => {
@@ -64,5 +44,34 @@ export const userRouter = createTRPCRouter({
         }
         throw err;
       }
+    }),
+  authorize: publicProcedure
+    .input(authorizeSchema)
+    .query(async ({ input, ctx }) => {
+      const userByEmail = await ctx.db.user.findUnique({
+        where: { email: input.email },
+      });
+
+      if (!userByEmail) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "User with this email does not exist",
+        });
+      }
+
+      if (userByEmail?.password !== input.password) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Provided credentials are invalid",
+        });
+      }
+
+      return {
+        id: userByEmail.id,
+        name: userByEmail.name,
+        surname: userByEmail.surname,
+        email: userByEmail.email,
+        role: userByEmail.role,
+      };
     }),
 });
