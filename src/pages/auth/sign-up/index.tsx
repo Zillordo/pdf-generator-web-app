@@ -10,7 +10,6 @@ import {
   SelectGroup,
   SelectItem,
 } from "~/components/ui/select";
-import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
@@ -32,6 +31,7 @@ import {
 import { UserRole } from "~/lib/constants";
 import { api } from "~/utils/api";
 import { Input } from "~/components/ui/input";
+import { signIn } from "next-auth/react";
 
 const createUserSchema = z
   .object({
@@ -87,7 +87,7 @@ export default function SignIn() {
     <div className="flex min-h-screen items-center justify-center">
       <Card className="w-[350px] bg-slate-50 dark:bg-slate-900">
         <CardHeader>
-          <CardTitle>Sign In</CardTitle>
+          <CardTitle>Sign Up</CardTitle>
         </CardHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit((values) => mutate(values))}>
@@ -227,18 +227,20 @@ export default function SignIn() {
                 {isLoading && (
                   <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Sign In
+                Sign Up
               </Button>
-              <Link className="w-full" href="/login">
-                <Button
-                  variant="ghost"
-                  className="w-full"
-                  size="sm"
-                  disabled={isLoading}
-                >
-                  Back to Login
-                </Button>
-              </Link>
+              <Button
+                variant="ghost"
+                className="w-full"
+                size="sm"
+                disabled={isLoading}
+                onClick={(e) => {
+                  e.preventDefault();
+                  void signIn();
+                }}
+              >
+                Back to Login
+              </Button>
             </CardFooter>
           </form>
         </Form>

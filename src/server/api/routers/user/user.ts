@@ -2,21 +2,20 @@ import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { createUserSchema, authorizeSchema } from "./user.schema";
+import bcrypt from "bcrypt";
 
 export const userRouter = createTRPCRouter({
-  list: publicProcedure.query(() => {
-    return "list";
-  }),
   create: publicProcedure
     .input(createUserSchema)
     .mutation(async ({ input, ctx }) => {
       try {
+        const hashedPassword = await bcrypt.hash(input.password, 10);
         const user = await ctx.db.user.create({
           data: {
             name: input.name,
             surname: input.surname,
             email: input.email,
-            password: input.password,
+            password: hashedPassword,
             role: input.role,
           },
         });

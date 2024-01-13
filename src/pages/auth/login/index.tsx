@@ -25,6 +25,8 @@ import {
 } from "~/components/ui/form";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export const loginUserSchema = z.object({
   email: z.string().email(),
@@ -34,6 +36,7 @@ export const loginUserSchema = z.object({
 export type LoginInput = z.infer<typeof loginUserSchema>;
 
 export default function Home() {
+  const router = useRouter();
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginUserSchema),
     defaultValues: {
@@ -42,8 +45,22 @@ export default function Home() {
     },
   });
 
-  const onSubmit = (values: LoginInput) => {
-    void signIn("credentials", {}, values);
+  const onSubmit = async (values: LoginInput) => {
+    const res = await signIn("credentials", {
+      callbackUrl: "/dashboard",
+      redirect: false,
+      ...values,
+    });
+
+    if (res?.ok) {
+      router.push("/dashboard");
+    } else {
+      if (!res?.error) {
+        console.error("Auth Error: ", res);
+        return;
+      }
+      toast.error(res?.error);
+    }
   };
 
   return (
@@ -96,8 +113,8 @@ export default function Home() {
 
             <CardFooter className="flex gap-3">
               <Button type="submit">Login</Button>
-              <Link href="/signIn">
-                <Button variant="ghost">Sign In</Button>
+              <Link href="/auth/sign-up">
+                <Button variant="ghost">Sign Up</Button>
               </Link>
             </CardFooter>
           </form>

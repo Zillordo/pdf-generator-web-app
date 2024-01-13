@@ -7,6 +7,7 @@ import { api } from "~/utils/api";
 import "~/styles/globals.css";
 import { ThemeProvider } from "~/components/theme-provider";
 import { TehemeToggle } from "~/components/theme-toggle";
+import { Toaster } from "sonner";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -22,6 +23,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <TehemeToggle />
       <SessionProvider session={session}>
         <Component {...pageProps} />
+        <Toaster />
       </SessionProvider>
     </ThemeProvider>
   );

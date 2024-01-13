@@ -1,7 +1,11 @@
-import { signIn } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
+import { toast } from "sonner";
+import { ProtectedLink } from "~/components/ProtectedLink";
 
 export default function Home() {
+  const session = useSession();
+
   return (
     <>
       <Head>
@@ -14,10 +18,17 @@ export default function Home() {
             <div className="flex flex-col items-center justify-center gap-4">
               <button
                 className="rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20"
-                onClick={() => void signIn()}
+                onClick={() => {
+                  if (session.status === "authenticated") {
+                    void signOut();
+                  } else {
+                    void signIn();
+                  }
+                }}
               >
-                Sign in
+                {session.status === "authenticated" ? "Log Out" : "Log In"}
               </button>
+              <ProtectedLink href="/dashboard">Dashboard</ProtectedLink>
             </div>
           </div>
         </div>

@@ -9,7 +9,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { type UserRole } from "~/lib/constants";
 
 import { db } from "~/server/db";
-import { api } from "~/utils/api";
+import bcrypt from "bcrypt";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -33,19 +33,17 @@ declare module "next-auth" {
 
 export const authOptions: NextAuthOptions = {
   pages: {
-    newUser: "/auth/sign-in",
     signIn: "/auth/login",
   },
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
-    session: ({ session, user }) => ({
+    session: ({ session, token }) => ({
       ...session,
       user: {
         ...session.user,
-        id: user.id,
-        name: user.name,
-        surname: user.surname,
-        email: user.email,
-        role: user.role,
+        id: token.sub,
       },
     }),
   },
@@ -62,16 +60,36 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        const { data, status } = api.user.authorize.useQuery({
-          email: credentials?.email ?? "",
-          password: credentials?.password ?? "",
-        });
-
-        if (status !== "success" && !data) {
+        if (!credentials) {
           return null;
         }
 
-        return data;
+        const userByEmail = await db.user.findUnique({
+          where: { email: credentials.email },
+        });
+
+        if (!userByEmail) {
+          throw new Error(
+            "User with this email does not exist, please sign up first",
+          );
+        }
+
+        const match = await bcrypt.compare(
+          credentials.password,
+          userByEmail.password,
+        );
+
+        if (!match) {
+          throw new Error("The credentials you provided are invalid");
+        }
+
+        return {
+          id: userByEmail.id,
+          name: userByEmail.name,
+          surname: userByEmail.surname,
+          email: userByEmail.email,
+          role: userByEmail.role,
+        };
       },
     }),
   ],
