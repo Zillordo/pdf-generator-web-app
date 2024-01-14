@@ -6,6 +6,10 @@ export const createPdfSchema = z.object({
   rewrite: z.boolean().optional(),
 });
 
-export const getFilesByIdQuery = z.object({
+export const queryFilesByUserIdSchema = z.object({
   userId: z.string(),
+});
+
+export const deleteFilesByIdSchema = z.object({
+  id: z.string(),
 });

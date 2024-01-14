@@ -1,13 +1,39 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import { createPdfSchema, getFilesByIdQuery } from "./image.schema";
+import {
+  createPdfSchema,
+  deleteFilesByIdSchema,
+  queryFilesByUserIdSchema,
+} from "./image.schema";
 import jsPDF from "jspdf";
 import { getFileFormat } from "./image.utils";
 import { TRPCError } from "@trpc/server";
 import fs from "fs";
 
 export const imageRoute = createTRPCRouter({
+  deleteFile: protectedProcedure
+    .input(deleteFilesByIdSchema)
+    .mutation(async ({ input, ctx }) => {
+      const file = await ctx.db.files.delete({ where: { id: input.id } });
+
+      fs.unlink(file.path, (err) => {
+        if (err) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "There was a problem with deleting file",
+          });
+        }
+
+        return {
+          status: "success",
+          data: {
+            message: "File deleted successfully",
+          },
+        };
+      });
+    }),
+
   getImagesByUserId: protectedProcedure
-    .input(getFilesByIdQuery)
+    .input(queryFilesByUserIdSchema)
     .query(async ({ input, ctx }) => {
       return await ctx.db.files.findMany({ where: { userId: input.userId } });
     }),
@@ -15,6 +41,23 @@ export const imageRoute = createTRPCRouter({
   createPdf: protectedProcedure
     .input(createPdfSchema)
     .mutation(async ({ input, ctx }) => {
+      const settings = await ctx.db.settings.findFirst({
+        where: { userId: ctx.session.user.id },
+      });
+      const files = await ctx.db.files.findMany({
+        where: { userId: ctx.session.user.id },
+      });
+
+      if (
+        settings?.allowedNumberOfFiles &&
+        files.length >= settings.allowedNumberOfFiles
+      ) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: `Number of allowed files exceeded, allowed number of files is ${settings.allowedNumberOfFiles}`,
+        });
+      }
+
       const sameNameFile = await ctx.db.files.findFirst({
         where: { name: input.name },
       });

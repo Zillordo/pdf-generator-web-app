@@ -9,7 +9,11 @@ import {
   TableBody,
   Table,
 } from "~/components/ui/table";
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import {
+  MagnifyingGlassIcon,
+  ReloadIcon,
+  TrashIcon,
+} from "@radix-ui/react-icons";
 import { AddNewPdfModal } from "./components/add-new-pdf-modal";
 import { api } from "~/utils/api";
 import { useSession } from "next-auth/react";
@@ -23,6 +27,7 @@ const Dashboard = () => {
     },
     { enabled: !!session?.user?.id },
   );
+  const { mutate, isLoading } = api.image.deleteFile.useMutation();
 
   return (
     <div>
@@ -75,11 +80,27 @@ const Dashboard = () => {
                       {file.date.toLocaleDateString()}
                     </TableCell>
                     <TableCell className="hidden md:table-cell">
-                      <Button>
-                        <a href={file.path} download={file.name}>
-                          Download
-                        </a>
-                      </Button>
+                      <div className="flex items-center justify-end gap-2">
+                        <Button>
+                          <a href={file.path} download={file.name}>
+                            Download
+                          </a>
+                        </Button>
+                        <Button
+                          onClick={async () => {
+                            mutate({ id: file.id });
+                            await refetch();
+                          }}
+                          variant="destructive"
+                          size="icon"
+                        >
+                          {isLoading ? (
+                            <ReloadIcon className="animate-spin" />
+                          ) : (
+                            <TrashIcon />
+                          )}
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
