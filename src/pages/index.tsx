@@ -10,24 +10,20 @@ import {
   Table,
 } from "~/components/ui/table";
 import {
+  ComponentNoneIcon,
   MagnifyingGlassIcon,
   ReloadIcon,
   TrashIcon,
 } from "@radix-ui/react-icons";
 import { AddNewPdfModal } from "./components/add-new-pdf-modal";
 import { api } from "~/utils/api";
-import { useSession } from "next-auth/react";
 import { Button } from "~/components/ui/button";
+import { useState } from "react";
 
 const Dashboard = () => {
-  const { data: session } = useSession();
-  const { data, refetch } = api.image.getImagesByUserId.useQuery(
-    {
-      userId: session?.user.id ?? "",
-    },
-    { enabled: !!session?.user?.id },
-  );
-  const { mutate, isLoading } = api.image.deleteFile.useMutation();
+  const [search, setSearch] = useState<string | undefined>(undefined);
+  const { data, refetch } = api.image.getFiles.useQuery();
+  const { mutateAsync, isLoading } = api.image.deleteFile.useMutation();
 
   return (
     <div>
@@ -38,8 +34,9 @@ const Dashboard = () => {
               <div className="relative">
                 <MagnifyingGlassIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
                 <Input
+                  onChange={(e) => setSearch(e.target.value)}
                   className="w-full appearance-none bg-white pl-8 shadow-none dark:bg-gray-950 md:w-2/3 lg:w-1/3"
-                  placeholder="Search products..."
+                  placeholder="Search by name..."
                   type="search"
                 />
               </div>
@@ -64,46 +61,65 @@ const Dashboard = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data?.map((file) => (
-                  <TableRow key={file.id}>
-                    <TableCell>
-                      <Image
-                        alt="Product image"
-                        className="aspect-square rounded-md object-cover"
-                        height="64"
-                        src={file.base64Preview}
-                        width="64"
-                      />
-                    </TableCell>
-                    <TableCell className="font-medium">{file.name}</TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      {file.date.toLocaleDateString()}
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      <div className="flex items-center justify-end gap-2">
-                        <Button>
-                          <a href={file.path} download={file.name}>
-                            Download
-                          </a>
-                        </Button>
-                        <Button
-                          onClick={async () => {
-                            mutate({ id: file.id });
-                            await refetch();
-                          }}
-                          variant="destructive"
-                          size="icon"
-                        >
-                          {isLoading ? (
-                            <ReloadIcon className="animate-spin" />
-                          ) : (
-                            <TrashIcon />
-                          )}
-                        </Button>
+                {data?.length === 0 && (
+                  <TableRow>
+                    <TableCell className="py-8 text-center" colSpan={4}>
+                      <div className="flex flex-col items-center gap-2">
+                        <ComponentNoneIcon className="h-16 w-16 text-gray-400" />
+                        <h3 className="text-lg font-semibold">No Data Found</h3>
+                        <p className="text-gray-500">
+                          We could not find any data. Try again later.
+                        </p>
                       </div>
                     </TableCell>
                   </TableRow>
-                ))}
+                )}
+                {data
+                  ?.filter((file) =>
+                    search
+                      ? file.name.toLowerCase().includes(search.toLowerCase())
+                      : true,
+                  )
+                  ?.map((file) => (
+                    <TableRow key={file.id}>
+                      <TableCell>
+                        <Image
+                          alt="Product image"
+                          className="aspect-square rounded-md object-cover"
+                          height="64"
+                          src={file.base64Preview}
+                          width="64"
+                        />
+                      </TableCell>
+                      <TableCell className="font-medium">{file.name}</TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {file.date.toLocaleDateString()}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        <div className="flex items-center justify-end gap-2">
+                          <Button>
+                            <a href={file.path} download={file.name}>
+                              Download
+                            </a>
+                          </Button>
+                          <Button
+                            onClick={async () => {
+                              await mutateAsync({ id: file.id });
+                              await refetch();
+                            }}
+                            variant="destructive"
+                            size="icon"
+                          >
+                            {isLoading ? (
+                              <ReloadIcon className="animate-spin" />
+                            ) : (
+                              <TrashIcon />
+                            )}
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </div>

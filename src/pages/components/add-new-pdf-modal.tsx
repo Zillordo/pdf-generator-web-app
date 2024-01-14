@@ -26,6 +26,7 @@ import { Card, CardContent } from "~/components/ui/card";
 import Image from "next/image";
 import { api } from "~/utils/api";
 import { toast } from "sonner";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 const schema = z.object({
   name: z.string().min(2).max(50),
@@ -40,7 +41,7 @@ type Props = {
 
 export const AddNewPdfModal = ({ onSuccessfulSubmit }: Props) => {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const { mutate } = api.image.createPdf.useMutation({
+  const { mutate, isLoading } = api.image.createPdf.useMutation({
     onSuccess: () => {
       toast.success("PDF has been successfully generated");
       resetDialog();
@@ -50,13 +51,7 @@ export const AddNewPdfModal = ({ onSuccessfulSubmit }: Props) => {
     onError: (err) => {
       if (err?.data?.code === "CONFLICT") {
         toast.error(err.message, {
-          description:
-            "Please try again with a different name. Or press on rewrite to rewrite the file",
-          action: {
-            onClick: () =>
-              form.handleSubmit((v) => mutate({ ...v, rewrite: true })),
-            label: "Rewrite",
-          },
+          description: "Please try again with a different name.",
         });
         return;
       }
@@ -169,7 +164,12 @@ export const AddNewPdfModal = ({ onSuccessfulSubmit }: Props) => {
               )}
 
               <DialogFooter className="mt-4">
-                <Button type="submit">Save changes</Button>
+                <Button type="submit">
+                  {isLoading && (
+                    <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Save changes
+                </Button>
               </DialogFooter>
             </form>
           </Form>

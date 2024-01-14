@@ -1,4 +1,14 @@
 import { type Record } from "@prisma/client/runtime/library";
+import fs from "fs";
+
+export const createDirectory = (directoryPath: string) => {
+  if (!fs.existsSync(directoryPath)) {
+    fs.mkdirSync(directoryPath);
+    console.log(`Directory '${directoryPath}' created successfully.`);
+  } else {
+    console.log(`Directory '${directoryPath}' already exists.`);
+  }
+};
 
 export const getFileFormat = (base64: string) => {
   const decodedBuffer = Buffer.from(base64, "base64");

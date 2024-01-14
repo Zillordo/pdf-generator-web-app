@@ -3,8 +3,10 @@ import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { TehemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
 
 export const Menu = () => {
+  const router = useRouter();
   const { data: session, status } = useSession();
 
   if (status !== "authenticated") {
@@ -46,7 +48,10 @@ export const Menu = () => {
           <Button
             className="mx-3 mb-4"
             variant="ghost"
-            onClick={() => void signOut()}
+            onClick={async () => {
+              await signOut();
+              void router.push("/");
+            }}
           >
             Logout
           </Button>

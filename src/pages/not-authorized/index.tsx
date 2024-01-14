@@ -1,8 +1,9 @@
 import { Button } from "~/components/ui/button";
 import { LockClosedIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/router";
+import withAuth from "~/utils/withAuth";
 
-export default function Component() {
+const NotAuthorized = () => {
   const router = useRouter();
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100 dark:bg-gray-900">
@@ -24,4 +25,6 @@ export default function Component() {
       </Button>
     </div>
   );
-}
+};
+
+export default withAuth(NotAuthorized);

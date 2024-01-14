@@ -28,7 +28,7 @@ export const settingsSchema = z.object({
 export type SettingsInput = z.infer<typeof settingsSchema>;
 
 const Settings = () => {
-  const { data: settings, refetch } = api.settings.getByUserId.useQuery();
+  const { data: settings, refetch } = api.settings.getSettings.useQuery();
   const { mutateAsync: create } = api.settings.create.useMutation();
   const { mutateAsync: update } = api.settings.update.useMutation();
 
@@ -80,7 +80,7 @@ const Settings = () => {
                   </FormItem>
                 )}
               />
-              <CardFooter className="pt-6">
+              <CardFooter className="p-0 pt-6">
                 <Button type="submit">Save Changes</Button>
               </CardFooter>
             </form>
