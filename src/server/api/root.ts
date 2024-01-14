@@ -1,6 +1,6 @@
 import { createTRPCRouter } from "~/server/api/trpc";
 import { userRouter } from "~/server/api/routers/user/user";
-import { imageRoute } from "~/server/api/routers/image/image";
+import { filesRoute } from "~/server/api/routers/files/files";
 import { settingsRouter } from "./routers/settings/settings";
 
 /**
@@ -10,7 +10,7 @@ import { settingsRouter } from "./routers/settings/settings";
  */
 export const appRouter = createTRPCRouter({
   user: userRouter,
-  image: imageRoute,
+  file: filesRoute,
   settings: settingsRouter,
 });
 

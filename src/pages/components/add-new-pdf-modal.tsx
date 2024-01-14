@@ -41,7 +41,7 @@ type Props = {
 
 export const AddNewPdfModal = ({ onSuccessfulSubmit }: Props) => {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const { mutate, isLoading } = api.image.createPdf.useMutation({
+  const { mutate, isLoading } = api.file.createPdf.useMutation({
     onSuccess: () => {
       toast.success("PDF has been successfully generated");
       resetDialog();

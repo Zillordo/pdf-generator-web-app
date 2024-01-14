@@ -1,11 +1,11 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import { createPdfSchema, deleteFilesByIdSchema } from "./image.schema";
+import { createPdfSchema, deleteFilesByIdSchema } from "./files.schema";
 import jsPDF from "jspdf";
-import { getFileFormat } from "./image.utils";
+import { getFileFormat } from "./files.utils";
 import { TRPCError } from "@trpc/server";
 import fs from "fs";
 
-export const imageRoute = createTRPCRouter({
+export const filesRoute = createTRPCRouter({
   deleteFile: protectedProcedure
     .input(deleteFilesByIdSchema)
     .mutation(async ({ input, ctx }) => {

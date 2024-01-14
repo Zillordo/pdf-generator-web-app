@@ -22,8 +22,8 @@ import { useState } from "react";
 
 const Dashboard = () => {
   const [search, setSearch] = useState<string | undefined>(undefined);
-  const { data, refetch } = api.image.getFiles.useQuery();
-  const { mutateAsync, isLoading } = api.image.deleteFile.useMutation();
+  const { data, refetch } = api.file.getFiles.useQuery();
+  const { mutateAsync, isLoading } = api.file.deleteFile.useMutation();
 
   return (
     <div>
