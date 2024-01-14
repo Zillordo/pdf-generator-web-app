@@ -1,12 +1,12 @@
 import { type Session } from "next-auth";
-import { SessionProvider, useSession } from "next-auth/react";
+import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
 
 import { api } from "~/utils/api";
 
 import "~/styles/globals.css";
 import { ThemeProvider } from "~/components/theme-provider";
-import { Toaster } from "sonner";
+import { Toaster } from "~/components/ui/sonner";
 import { Menu } from "~/components/menu";
 
 const MyApp: AppType<{ session: Session | null }> = ({

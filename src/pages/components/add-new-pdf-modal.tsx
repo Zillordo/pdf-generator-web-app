@@ -34,15 +34,32 @@ const schema = z.object({
 
 type Input = z.infer<typeof schema>;
 
-export const AddNewPdfModal = () => {
+type Props = {
+  onSuccessfulSubmit?: () => void;
+};
+
+export const AddNewPdfModal = ({ onSuccessfulSubmit }: Props) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const { mutate } = api.image.createPdf.useMutation({
     onSuccess: () => {
       toast.success("PDF has been successfully generated");
       resetDialog();
       setDialogOpen(false);
+      onSuccessfulSubmit?.();
     },
     onError: (err) => {
+      if (err?.data?.code === "CONFLICT") {
+        toast.error(err.message, {
+          description:
+            "Please try again with a different name. Or press on rewrite to rewrite the file",
+          action: {
+            onClick: () =>
+              form.handleSubmit((v) => mutate({ ...v, rewrite: true })),
+            label: "Rewrite",
+          },
+        });
+        return;
+      }
       toast.error(err.message);
     },
   });

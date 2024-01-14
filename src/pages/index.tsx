@@ -1,7 +1,5 @@
 import withAuth from "~/utils/withAuth";
 import Image from "next/image";
-
-import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import {
   TableHead,
@@ -13,8 +11,19 @@ import {
 } from "~/components/ui/table";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { AddNewPdfModal } from "./components/add-new-pdf-modal";
+import { api } from "~/utils/api";
+import { useSession } from "next-auth/react";
+import { Button } from "~/components/ui/button";
 
 const Dashboard = () => {
+  const { data: session } = useSession();
+  const { data, refetch } = api.image.getImagesByUserId.useQuery(
+    {
+      userId: session?.user.id ?? "",
+    },
+    { enabled: !!session?.user?.id },
+  );
+
   return (
     <div>
       <div className="flex flex-col">
@@ -36,7 +45,7 @@ const Dashboard = () => {
           <div className="flex items-center">
             <h1 className="text-lg font-semibold md:text-2xl">PDFs</h1>
             <div className="ml-auto">
-              <AddNewPdfModal />
+              <AddNewPdfModal onSuccessfulSubmit={refetch} />
             </div>
           </div>
           <div className="rounded-lg border shadow-sm">
@@ -46,24 +55,34 @@ const Dashboard = () => {
                   <TableHead className="w-[80px]">Image</TableHead>
                   <TableHead className="max-w-[150px]">Name</TableHead>
                   <TableHead className="hidden md:table-cell">Date</TableHead>
+                  <TableHead className="hidden md:table-cell"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow>
-                  <TableCell>
-                    <Image
-                      alt="Product image"
-                      className="aspect-square rounded-md object-cover"
-                      height="64"
-                      src="/placeholder.svg"
-                      width="64"
-                    />
-                  </TableCell>
-                  <TableCell className="font-medium">Glimmer Lamps</TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    18.04.2021
-                  </TableCell>
-                </TableRow>
+                {data?.map((file) => (
+                  <TableRow key={file.id}>
+                    <TableCell>
+                      <Image
+                        alt="Product image"
+                        className="aspect-square rounded-md object-cover"
+                        height="64"
+                        src={file.base64Preview}
+                        width="64"
+                      />
+                    </TableCell>
+                    <TableCell className="font-medium">{file.name}</TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      {file.date.toLocaleDateString()}
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      <Button>
+                        <a href={file.path} download={file.name}>
+                          Download
+                        </a>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </div>
