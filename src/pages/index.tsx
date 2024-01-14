@@ -12,6 +12,7 @@ import {
   Table,
 } from "~/components/ui/table";
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import { AddNewPdfModal } from "./components/add-new-pdf-modal";
 
 const Dashboard = () => {
   return (
@@ -34,9 +35,9 @@ const Dashboard = () => {
         <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
           <div className="flex items-center">
             <h1 className="text-lg font-semibold md:text-2xl">PDFs</h1>
-            <Button className="ml-auto" size="sm">
-              Add PDF
-            </Button>
+            <div className="ml-auto">
+              <AddNewPdfModal />
+            </div>
           </div>
           <div className="rounded-lg border shadow-sm">
             <Table>
