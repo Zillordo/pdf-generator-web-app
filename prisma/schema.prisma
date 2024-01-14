@@ -59,3 +59,9 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
+model PdfFiles {
+  id   String @id @default(cuid())
+  name String
+  path String
+}
