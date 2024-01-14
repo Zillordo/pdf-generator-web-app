@@ -33,17 +33,31 @@ declare module "next-auth" {
 
 export const authOptions: NextAuthOptions = {
   pages: {
+    newUser: "/auth/sign-up",
     signIn: "/auth/login",
   },
   session: {
     strategy: "jwt",
   },
+  jwt: {
+    maxAge: 60 * 60 * 24 * 30,
+  },
   callbacks: {
+    jwt: async ({ token, user }) => {
+      if (user) {
+        token.role = user.role;
+        token.surname = user.surname;
+      }
+
+      return token;
+    },
     session: ({ session, token }) => ({
       ...session,
       user: {
         ...session.user,
         id: token.sub,
+        role: token.role,
+        surname: token.surname,
       },
     }),
   },

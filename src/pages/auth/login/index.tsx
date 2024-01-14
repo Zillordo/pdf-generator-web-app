@@ -35,7 +35,7 @@ export const loginUserSchema = z.object({
 
 export type LoginInput = z.infer<typeof loginUserSchema>;
 
-export default function Home() {
+export default function Login() {
   const router = useRouter();
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginUserSchema),
@@ -47,13 +47,13 @@ export default function Home() {
 
   const onSubmit = async (values: LoginInput) => {
     const res = await signIn("credentials", {
-      callbackUrl: "/dashboard",
+      callbackUrl: "/",
       redirect: false,
       ...values,
     });
 
     if (res?.ok) {
-      router.push("/dashboard");
+      router.push("/");
     } else {
       if (!res?.error) {
         console.error("Auth Error: ", res);
@@ -64,7 +64,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="col-span-2 flex min-h-screen items-center justify-center">
       <Card className="w-[350px] bg-slate-50 dark:bg-slate-900">
         <CardHeader>
           <CardTitle>Login</CardTitle>

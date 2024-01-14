@@ -84,7 +84,7 @@ export default function SignIn() {
   });
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
+    <div className="col-span-2 flex min-h-screen items-center justify-center">
       <Card className="w-[350px] bg-slate-50 dark:bg-slate-900">
         <CardHeader>
           <CardTitle>Sign Up</CardTitle>
