@@ -26,8 +26,8 @@ Similarly, I am storing the generated PDF files on disk for simplicity. However,
 
 3. Setup the .env file
 
-- `add a url for sqlite database (file:./db.sqlite))`
-- `add a secret for next-auth ()`
+- `add a DATABASE_URL for sqlite database (file:./db.sqlite))`
+- `add a NEXTAUTH_SECRET for next-auth`
 - `add NEXTAUTH_URL="http://localhost:3000/auth/login"
 `
 
