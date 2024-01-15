@@ -21,7 +21,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       disableTransitionOnChange
     >
       <SessionProvider session={session}>
-        <div className="grid h-screen min-h-screen w-full overflow-hidden lg:grid-cols-[auto_1fr]">
+        <div className="grid h-screen w-screen overflow-hidden lg:grid-rows-[auto_1fr]">
           <Menu />
           <Component {...pageProps} />
         </div>
