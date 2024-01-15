@@ -34,9 +34,6 @@ interface CreateContextOptions {
  *
  * Examples of things you may need it for:
  * - testing, so we don't have to mock Next.js' req/res
- * - tRPC's `createSSGHelpers`, where we don't have req/res
- *
- * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {

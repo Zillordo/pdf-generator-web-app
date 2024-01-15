@@ -1,12 +1,6 @@
-# Create T3 App
+# Cool People
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
-
-## What's next? How do I make an app with this?
-
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
-
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## Tech Stack
 
 - [Next.js](https://nextjs.org)
 - [NextAuth.js](https://next-auth.js.org)
@@ -14,15 +8,35 @@ If you are not familiar with the different technologies used in this project, pl
 - [Tailwind CSS](https://tailwindcss.com)
 - [tRPC](https://trpc.io)
 
-## Learn More
+For this project, I decided to use some technologies that I am not familiar with, such as tRPC, NextAuth, NextJS. I made this decision to learn more about these technologies. To keep things simple, I used SQLite.
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+However, I faced some challenges while uploading images using tRPC, as they do not support FormData yet (it is an experimental feature). To overcome this, I converted the image into a base64 string and saved it in the database. Although it is not the best solution, for now, it works. In the future, it would be better to save the image in a cloud service like an S3 bucket with pre-signed URLs.
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+Similarly, I am storing the generated PDF files on disk for simplicity. However, this approach limits the ability to choose a unique name for the file. While I acknowledge that this is not the best solution, it works well enough for this demo project.
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+## Getting Started
 
-## How do I deploy this?
+1. Clone this repository
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+- `git clone [repository-url]
+
+2. Install dependencies
+
+- `npm install`
+
+3. Setup the .env file
+
+- `add a url for sqlite database (file:./db.sqlite))`
+- `add a secret for next-auth ()`
+- `add NEXTAUTH_URL="http://localhost:3000/auth/login"
+`
+
+4. Prepare the prisma ORM
+
+- `npm run db:migrate`
+- `npm run db:generate`
+- `npm run db:push`
+
+5. Run the development server
+
+- `npm run dev`
