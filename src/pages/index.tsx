@@ -13,9 +13,9 @@ import {
   ReloadIcon,
   TrashIcon,
 } from "@radix-ui/react-icons";
-import { AddNewPdfModal } from "./components/add-new-pdf-modal";
 import { api } from "~/utils/api";
 import { Button } from "~/components/ui/button";
+import { AddNewPdfModal } from "~/components/add-new-pdf-modal";
 
 const Dashboard = () => {
   const { data, refetch } = api.file.getFiles.useQuery();
