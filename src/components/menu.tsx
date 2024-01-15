@@ -18,6 +18,11 @@ export const Menu = () => {
     return <></>;
   }
 
+  const handleLogout = async () => {
+    await signOut();
+    void router.push("/");
+  };
+
   return (
     <div className="box-border flex h-[60px] w-full bg-gray-100/40 dark:bg-gray-800/40 lg:block">
       <div className="flex h-full items-center border-b">
@@ -32,12 +37,7 @@ export const Menu = () => {
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={() => async () => {
-                  await signOut();
-                  void router.push("/");
-                }}
-              >
+              <DropdownMenuItem onClick={handleLogout}>
                 Log Out
               </DropdownMenuItem>
             </DropdownMenuContent>
